@@ -1,11 +1,13 @@
 import json
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from .models import conversation
+import asyncio
 
 class chatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        await self.room_group_name = 'chats'
+
+        self.room_group_name = 'chats'
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -16,7 +18,6 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def disconnect(self, close_code):
         print('Connection closed...')
-        self.close()
 
     async def receive(self, text_data):
         pass 
@@ -47,6 +48,20 @@ class chatConsumer(AsyncWebsocketConsumer):
         #         'convoId': convoId,
         #     }
         # )
+    
+    async def continuous_fetching_data(self):
+        while True:
+            data = await sync_to_async(self.fetch_data_from_db)
+            await self.send(text_data=json.dumps({
+                'data': data
+            }))
+            await asyncio.sleep(1)
+
+    
+    def fetch_data_from_db(self):
+        data = conversation.objects.all()
+
+        return data
 
     def chat_message(self, event):
         msg = event['message']
