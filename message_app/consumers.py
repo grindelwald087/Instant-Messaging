@@ -11,40 +11,42 @@ class chatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+
         await self.accept()
+    
+    async def disconnect(self, close_code):
+        print('Connection closed...')
+        self.close()
 
-        self.send(text_data=json.dumps({
-            'type': "connection",
-            'message': "connected"
-        }))
+    async def receive(self, text_data):
+        pass 
 
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        msg = text_data_json['message']
-        sender = text_data_json['user']
-        receiver = text_data_json['receiver']
-        profileUrl = text_data_json['profileUrl']
-        convoId = text_data_json['convoId']
+        # text_data_json = json.loads(text_data)
+        # msg = text_data_json['message']
+        # sender = text_data_json['user']
+        # receiver = text_data_json['receiver']
+        # profileUrl = text_data_json['profileUrl']
+        # convoId = text_data_json['convoId']
 
-        new_message = conversation.objects.create(
-            convo_id = convoId,
-            message_content = msg,
-            sender = sender,
-            receiver = receiver,
-            status = 'sent',
-        )
+        # new_message = conversation.objects.create(
+        #     convo_id = convoId,
+        #     message_content = msg,
+        #     sender = sender,
+        #     receiver = receiver,
+        #     status = 'sent',
+        # )
 
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': msg,
-                'sender': sender,
-                'receiver': receiver,
-                'profileUrl': profileUrl,
-                'convoId': convoId,
-            }
-        )
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.room_group_name,
+        #     {
+        #         'type': 'chat_message',
+        #         'message': msg,
+        #         'sender': sender,
+        #         'receiver': receiver,
+        #         'profileUrl': profileUrl,
+        #         'convoId': convoId,
+        #     }
+        # )
 
     def chat_message(self, event):
         msg = event['message']
