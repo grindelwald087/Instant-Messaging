@@ -1,17 +1,17 @@
 import json
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import conversation
 
-class chatConsumer(WebsocketConsumer):
-    def connect(self):
-        self.room_group_name = 'chats'
+class chatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.room_group_name = 'chats'
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
         )
-        self.accept()
+        await self.accept()
 
         self.send(text_data=json.dumps({
             'type': "connection",
