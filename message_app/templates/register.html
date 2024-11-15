@@ -1,0 +1,65 @@
+<!-- Extends to Layout -->
+{% extends "layout.html" %}
+
+<!-- Loading Static Files -->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Register | {{block.super}} {% endblock title %}
+
+<!-- CSS -->
+{% block CSS %}
+
+    <link rel="stylesheet" href="{% static "css/register.css" %}">
+
+{% endblock CSS %}
+
+<!-- Render Content to Layout -->
+{% block content %}
+
+    <main class="container">
+        <div class="row d-flex justify-content-center my-5">
+            <form method="post" class="col-5 p-5 d-flex flex-column gap-3 border rounded">
+                {% csrf_token %}
+                <h1 class="text-center text-danger mb-5">MariChat <span class="text-dark fs-4">REGISTER</span></h1>
+                <div class="d-flex justify-content-between gap-3">
+                    <section >
+                        <label for="fname">First Name</label>
+                        {{ register_form.first_name }}
+                    </section>
+                    <section >
+                        <label for="lname">Last Name</label>
+                        {{ register_form.last_name }}
+                    </section>
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    {{ register_form.email }}
+                </div>
+                <div>
+                    <label for="uname">Username</label>
+                    {{ register_form.username }}
+                    {% for error in register_form.username.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    {{ register_form.password }}
+                </div>
+                <div>
+                    <label for="confirm_password">Retype Password</label>
+                    {{ register_form.confirm_password }}
+                </div>
+                <button type="submit" class="btn btn-primary my-3">REGISTER</button>
+                <div class="d-flex justify-content-center">
+                    <a href="{% url "login" %}" class="text-decoration-none text-danger">sign in</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+{% endblock content %}
+
+<!-- JS -->
+{% block JS %}{% endblock JS %}

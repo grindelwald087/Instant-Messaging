@@ -1,0 +1,53 @@
+<!-- Extent to Content Layout-->
+{% extends "content/chats.html" %}
+
+<!-- Loading Static Files -->
+{% load static %}
+
+<!-- Render Content to Layout -->
+
+{% block active %}
+    {% if message.convo_id == id %}
+        custom_reciever_active
+    {% endif %}
+{% endblock active %}
+
+{% block third_column %}
+    {% for r in receiver %}
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ r.receiver.profile.url | lower }}" alt="{{ r.receiver_id }}">
+                <div>
+                    <h5 class="text-capitalize">{{ r.receiver.first_name }} {{ r.receiver.last_name }}</h5>
+                    <span>{{ r.receiver.status }}</span>
+                </div>
+            </div>
+        </div>
+        <div id="custom_convo" class="d-flex flex-column gap-3 p-5 overflow-y-auto custom_convo">
+            {% for content in messageContent %}
+                {% if user == content.sender %}
+                    <div class="align-self-end d-flex gap-2 align-items-end">
+                        <pre class="px-3 py-2 m-0 custom_single_msg">{{ content.message_content }}</pre>
+                        <img src="{{ r.sender.profile.url | lower }}" alt="{{ r.sender }}">
+                    </div>
+                {% else %}
+                    <div class="d-flex gap-2 align-items-end">
+                        <img src="{{ r.receiver.profile.url | lower }}" alt="{{ r.receiver }}">
+                        <pre class="px-3 py-2 m-0 custom_single_msg">{{ content.message_content }}</pre>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>          
+        <form id="form" method="POST">
+            {% csrf_token %}
+            <div class="d-flex align-items-end gap-3">
+                {{ form.compose_msg }}
+                <input type="hidden" name="profile_url" id="" value="{{ r.sender.profile.url }}">
+                <input type="hidden" name="receiver" id="receiver" value="{{ r.receiver }}">
+                <input type="hidden" name="user" id="user" value="{{ user }}">
+                <input type="hidden" name="convo_id" id="convo_id" value="{{ id }}">
+                <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </form>
+    {% endfor %}
+{% endblock third_column %}

@@ -1,0 +1,32 @@
+<!-- Extent to Content Layout-->
+{% extends "content/content_layout.html" %}
+
+<!-- Loading Static Files -->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Settings {% endblock title %}
+
+<!-- CSS -->
+{% block CSS %}
+
+{% endblock CSS %}
+
+<!-- Active Button -->
+{% block btn_class %}
+    {% if sidebar == 'settings' %}
+        btn-dark
+    {% endif %}
+{% endblock btn_class %}
+
+<!-- Render Content to Layout -->
+{% block second_column %}
+    <h4 class="fw-bold">Settings</h4>
+{% endblock second_column %}
+
+{% block third_column %}
+
+{% endblock third_column %}
+
+<!-- JS -->
+{% block JS %}{% endblock JS %}

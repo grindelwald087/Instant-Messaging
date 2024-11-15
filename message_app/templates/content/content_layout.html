@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+    <!-- CSS -->
+    {% block CSS %}{% endblock CSS %}
+    <link rel="stylesheet" href="{% static "css/content/content_layout.css" %}">
+    <!-- BS5 -->
+    <link rel="stylesheet" href="{% static "bootstrap-5.3.3/css/bootstrap.min.css" %}">
+    <script src="{% static "bootstrap-5.3.3/js/bootstrap.min.js" %}"></script>
+    <!-- FA6-->
+    <link rel="stylesheet" href="{% static "fontawesome-6.0.0/css/all.min.css" %}">
+</head>
+<body>
+    <main class="container-fluid vh-100 py-3 px-4">
+        <div class="row h-100 gap-2">
+            <div class="col-auto d-flex flex-column py-3 align-items-center gap-4 custom_nav">
+                <a href="{% url "profile" %}"><img src="{{ context.userProfiles.profile.url | lower }}" alt="{{ context.userProfiles.username }}" title="{{ context.userProfiles.username }} ( {{ context.userProfiles.first_name | title }} {{ context.userProfiles.last_name | title }} )"></a>
+                {% for sidebar, attr in sidebars %}
+                    <a href="{% url sidebar %}" class="btn {% block btn_class %}{% endblock btn_class %}"><i class="{{ attr }} fs-4" title="{{ sidebar }}"></i></a>
+                {% endfor %}
+            </div>
+            <div class="col-3 d-flex flex-column py-3 custom_chats">
+                {% block second_column %}
+                
+                {% endblock second_column %}
+            </div>
+            <div class="col d-flex flex-column justify-content-between gap-2 py-3 custom_chats">
+                {% block third_column %}
+                    
+                {% endblock third_column %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+
+<!-- JS -->
+{% block JS %}{% endblock JS %}

@@ -1,0 +1,12 @@
+.custom_profile {
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.custom_profile:hover {
+    background-color: hsl(0, 0%, 50%);
+}
+
+.custom_reciever_active {
+    background-color: hsl(0, 0%, 25%);
+}

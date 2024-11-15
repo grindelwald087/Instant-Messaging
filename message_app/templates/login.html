@@ -1,0 +1,49 @@
+<!-- Extends to Layout -->
+{% extends "layout.html" %}
+
+<!-- Loading Static Files -->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Login | {{block.super}} {% endblock title %}
+
+<!-- CSS -->
+{% block CSS %}
+    <link rel="stylesheet" href="{% static "css/login.css" %}">
+{% endblock CSS %}
+
+<!-- Render Content to Layout -->
+{% block content %}
+    <main class="container">
+        <div class="row d-flex justify-content-center my-5">
+            <form method="post" class="col-5 p-5 d-flex flex-column gap-3 border rounded" onsubmit=('token')>
+                {% csrf_token %}
+                <h1 class="text-center text-danger mb-5">MariChat <span class="text-dark fs-4">LOGIN</span></h1>
+                {% if messages %}
+                    {% for msg in messages %}
+                        <div class="alert alert-danger text-center">{{ msg }}</div>
+                    {% endfor %}
+                {% endif %}
+                    <div>
+                        <label for="uname">Username</label>
+                        {{ login_form.username }}
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        {{ login_form.password }}
+                    </div>
+                    <input type="hidden" name="tab_id" id="tabId" value="">
+                <button type="submit" class="btn btn-primary my-5">LOGIN</button>
+                <section class="d-flex justify-content-center gap-5">
+                    <a href="{% url "register" %}" class="text-decoration-none text-danger">create account</a>
+                    <a href="" class="text-decoration-none text-danger">forgot password?</a>
+                </section>
+            </form>
+        </div>
+    </main>
+{% endblock content %}
+
+<!-- JS -->
+{% block JS %}
+    <script src="{% static "js/login.js" %}"></script>
+{% endblock JS %}

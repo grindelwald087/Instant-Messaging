@@ -1,0 +1,46 @@
+<!-- Extent to Content Layout-->
+{% extends "content/content_layout.html" %}
+
+<!-- Loading Static Files -->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Chats {% endblock title %}
+
+<!-- CSS -->
+{% block CSS %}
+    <link rel="stylesheet" href="{% static "css/content/chats.css" %}">
+{% endblock CSS %}
+
+<!-- JS -->
+{% block JS %}
+    <script src="{% static "js/content/chats.js" %}"></script>
+{% endblock JS %}
+
+<!-- Active Button -->
+{% block btn_class %}
+    {% if sidebar == 'chats' %}
+        btn-dark
+    {% endif %}
+{% endblock btn_class %}
+
+<!-- Render Content to Layout -->
+<!-- Second column -->
+{% block second_column %}
+    <h4 class="fw-bold">Chats</h4>
+    <input type="search" name="" id="" placeholder="Search Messages" class="form-control mb-3">
+    {% for message in context.messages %}
+        <section class="d-flex gap-3 p-1 px-2 align-items-center custom_reciever {% block active %}{% endblock active %}" onclick="convo({{ message.convo_id }})">
+            <img src="{{ message.receiver.profile.url | lower }}" alt="{{ message.receiver_id }}">
+            <h5 class="fw-bold m-0 text-capitalize">{{ message.receiver.first_name }} {{ message.receiver.last_name }}</h5>
+        </section>
+    {% endfor %}
+{% endblock second_column %}
+
+{% block third_column %}
+    <div class="d-flex flex-column justify-content-center align-items-center mt-5">
+        <h1>Welcome to <span class="text-danger">MariChat</span></h1>
+        <h5>start your conversation now</h5>
+        <img src="{% static "images/chatting.gif" %}" alt="chatting" class="custom_gif mt-5">
+    </div>
+{% endblock third_column %}

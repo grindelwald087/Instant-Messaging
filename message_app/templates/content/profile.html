@@ -1,0 +1,32 @@
+<!-- Extent to Content Layout-->
+{% extends "content/content_layout.html" %}
+
+<!-- Loading Static Files -->
+{% load static %}
+
+<!-- Page Title -->
+{% block title %} Profile {% endblock title %}
+
+<!-- CSS -->
+{% block CSS %}
+    <link rel="stylesheet" href="{% static "css/content/profile.css" %}">
+{% endblock CSS %}  
+
+<!-- Render Content to Layout -->
+<!-- Second column -->
+{% block second_column %}
+    <h4 class="fw-bold">Profile</h4>
+    {% for profile, attr in profiles %}
+        <a href="{% url profile %}" class="p-2 text-decoration-none text-dark custom_profile"><i class="{{ attr }} fs-4"></i><span class="text-capitalize"> {{ profile }}</span></a>
+    {% endfor %}
+{% endblock second_column %}
+
+<!-- Third Column -->
+{% block third_column %}
+
+{% endblock third_column %}
+
+<!-- JS -->
+{% block JS %}
+    <script src="{% static "js/content/chats.js" %}"></script>
+{% endblock JS %}

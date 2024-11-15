@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Maritext{% endblock title %}</title>
+    <!-- CSS -->
+    {% block CSS %}{% endblock CSS %}
+    <!-- BS5 -->
+    <link rel="stylesheet" href="{% static "bootstrap-5.3.3/css/bootstrap.min.css" %}">
+    <script src="{% static "bootstrap-5.3.3/js/bootstrap.min.js" %}"></script>
+    <!-- FA6-->
+    <link rel="stylesheet" href="{% static "fontawesome-6.0.0/css/all.min.css" %}">
+</head>
+<body>
+    {% block content %}{% endblock content %}
+</body>
+</html>
+
+<!-- JS -->
+{% block JS %}{% endblock JS %}
