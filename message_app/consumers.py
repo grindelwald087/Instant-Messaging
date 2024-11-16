@@ -1,8 +1,12 @@
 import json
+import asyncio
+import random
+import string
+
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
+from channels.db import database_sync_to_async
 from .models import conversation
-import asyncio
 
 class chatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -15,9 +19,6 @@ class chatConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
-
-        asyncio.create_task(self.continuous_fetching_data())
-
         print('Connected...')
     
     async def disconnect(self, close_code):
@@ -29,23 +30,11 @@ class chatConsumer(AsyncWebsocketConsumer):
         print('Connection closed...', close_code)
 
     async def receive(self, text_data):
-        pass
-        # await self.continuous_fetching_data(text_data) 
+        text_data_json = json.loads(text_data)
+        msg = text_data_json['message']
 
-        # text_data_json = json.loads(text_data)
-        # msg = text_data_json['message']
-        # sender = text_data_json['user']
-        # receiver = text_data_json['receiver']
-        # profileUrl = text_data_json['profileUrl']
-        # convoId = text_data_json['convoId']
-
-        # new_message = conversation.objects.create(
-        #     convo_id = convoId,
-        #     message_content = msg,
-        #     sender = sender,
-        #     receiver = receiver,
-        #     status = 'sent',
-        # )
+        await self.insert_message_to_db(msg)
+        await self.fetching_data()
 
         # async_to_sync(self.channel_layer.group_send)(
         #     self.room_group_name,
@@ -59,25 +48,46 @@ class chatConsumer(AsyncWebsocketConsumer):
         #     }
         # )
     
-    async def continuous_fetching_data(self):
-        while True:
-            data = await sync_to_async(self.fetch_data_from_db)()
-            # for i in data:
-            #     msg = i['sender']
-            #     print(msg)
+    async def fetching_data(self):
+        fetched = await database_sync_to_async(self.fetch_data_from_db)()
 
-            await self.send(text_data=json.dumps({
-                'data': data
-            }))
+        if fetched:
+            serialized_data = {
+                'type': 'new_chat',
+                'message_content_id': fetched.message_content_id,
+                'message_content': fetched.message_content,
+                'convo_id': fetched.convo_id,
+                'sender': fetched.sender,
+                'receiver': fetched.receiver,
+                'status': fetched.status,
+                'created_at': str(fetched.created_at),
+            }
 
-            await asyncio.sleep(1)
-
+            await self.send(text_data=json.dumps(serialized_data))
     
     def fetch_data_from_db(self):
-        data = conversation.objects.all().values('message_content', 'sender')
+        return conversation.objects.order_by('created_at').last()
+    
+    @database_sync_to_async
+    def insert_message_to_db(self, msg):
+        # convo_id = chatConsumer.generate_random_convo_id(15)
 
-        return list(data)
-
+        conversation.objects.create(
+            convo_id = 10,    
+            message_content = msg,
+            sender = 'bastard_11',
+            receiver = 'no_one_12',
+            status = 'sent',
+        )
+    
+    # @staticmethod
+    # def generate_random_convo_id(length = 8):
+    #     characters = string.ascii_letters + string.digits
+        
+    #     random_id = ''.join(random.choices(characters, k=length))
+        
+    #     return random_id
+    
     # def chat_message(self, event):
     #     msg = event['message']
     #     sender = event['sender']

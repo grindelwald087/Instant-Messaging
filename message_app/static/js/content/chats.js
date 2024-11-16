@@ -25,58 +25,58 @@ messageInput.addEventListener('input', function () {
 const url = `ws://${window.location.host}/ws/socket-server/`
 const chatSocket = new WebSocket(url)
 
-chatSocket.onmessage = (e) => {
-    const data = JSON.parse(e.data)
-    // console.log(data)
-    
-}
+// chatSocket.onmessage = (e) => {
+//     const data = JSON.parse(e.data)
+//     console.log(data.message_content)
+// }
 
-let form = document.getElementById('sample')
-
+let form = document.getElementById('form')
 form.addEventListener('submit', (e) => {
     e.preventDefault()
-    let time = new Date()
-    console.log(time)
-    console.log(document.getElementById('san').value)
 
+    let msg = e.target.compose_msg.value
+
+    chatSocket.send(JSON.stringify({
+        'message': msg,
+    }))
+
+    form.reset()
+    messageInput.style.height = '0'
+    messageInput.style.overflowY = 'hidden'
 })
 
-// chatSocket.onmessage = (e) => {
-//     let data = JSON.parse(e.data)
-//     let display = document.getElementById('custom_convo')
-//     let user = document.getElementById('user').value
-//     let receiver = document.getElementById('receiver').value
-//     let convo_id = document.getElementById('convo_id').value
-//     let custom_new_msg = document.getElementById('custom_new_msg')
+chatSocket.onmessage = (e) => {
+    let data = JSON.parse(e.data)
+    let display = document.getElementById('custom_convo')
+    // let user = document.getElementById('user').value
+    // let receiver = document.getElementById('receiver').value
+    // let convo_id = document.getElementById('convo_id').value
+    // let custom_new_msg = document.getElementById('custom_new_msg')
 
-//     if (data.convoId == convo_id) {
-//         if (data.type === 'chats') {
-//             let messageHtml = ``
+    if (data.convo_id == 10) {
+        if (data.type === 'new_chat') {
+            let messageHtml = ``
     
-//             if (data.sender == user) {
-//                 messageHtml += `
-//                     <div class="align-self-end d-flex gap-2 align-items-end">
-//                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message}</pre>
-//                         <img src="${data.profile_url.toLowerCase()} " alt="${data.sender}">
-//                     </div>`
-//             } else {
-//                 messageHtml += `
-//                     <div class="d-flex gap-2 align-items-end">
-//                         <img src="${data.profile_url.toLowerCase()}" alt="${data.receiver}">
-//                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message}</pre>
-//                     </div>`
-//             }
-
-//             // if (data.receiver == receiver) {
-//             //     custom_new_msg.innerHTML += 1
-//             // }
+            if (data.sender == 'bastard_11') {
+                messageHtml += `
+                    <div class="align-self-end d-flex gap-2 align-items-end">
+                        <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
+                        <img src="" alt="${data.sender}">
+                    </div>`
+            } else {
+                messageHtml += `
+                    <div class="d-flex gap-2 align-items-end">
+                        <img src="" alt="${data.receiver}">
+                        <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
+                    </div>`
+            }
     
-//             display.insertAdjacentHTML('beforeend', messageHtml)
+            display.insertAdjacentHTML('beforeend', messageHtml)
     
-//             display.scrollTop = display.scrollHeight
-//         }
-//     }
-// }
+            display.scrollTop = display.scrollHeight
+        }
+    }
+}
 
 // let form = document.getElementById('form')
 // form.addEventListener('submit', (e) => {
@@ -97,6 +97,5 @@ form.addEventListener('submit', (e) => {
 
 //     form.reset()
 
-//     messageInput.style.height = '0'
-//     messageInput.style.overflowY = 'hidden'
+    
 // })
