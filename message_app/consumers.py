@@ -9,18 +9,28 @@ class chatConsumer(AsyncWebsocketConsumer):
 
         self.room_group_name = 'chats'
 
-        async_to_sync(self.channel_layer.group_add)(
+        await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
 
         await self.accept()
+
+        asyncio.create_task(self.continuous_fetching_data())
+
+        print('Connected...')
     
     async def disconnect(self, close_code):
-        print('Connection closed...')
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        print('Connection closed...', close_code)
 
     async def receive(self, text_data):
-        pass 
+        pass
+        # await self.continuous_fetching_data(text_data) 
 
         # text_data_json = json.loads(text_data)
         # msg = text_data_json['message']
@@ -51,30 +61,35 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def continuous_fetching_data(self):
         while True:
-            data = await sync_to_async(self.fetch_data_from_db)
+            data = await sync_to_async(self.fetch_data_from_db)()
+            # for i in data:
+            #     msg = i['sender']
+            #     print(msg)
+
             await self.send(text_data=json.dumps({
                 'data': data
             }))
+
             await asyncio.sleep(1)
 
     
     def fetch_data_from_db(self):
-        data = conversation.objects.all()
+        data = conversation.objects.all().values('message_content', 'sender')
 
-        return data
+        return list(data)
 
-    def chat_message(self, event):
-        msg = event['message']
-        sender = event['sender']
-        receiver = event['receiver']
-        profileUrl = event['profileUrl']
-        convoId = event['convoId']
+    # def chat_message(self, event):
+    #     msg = event['message']
+    #     sender = event['sender']
+    #     receiver = event['receiver']
+    #     profileUrl = event['profileUrl']
+    #     convoId = event['convoId']
 
-        self.send(text_data=json.dumps({
-            'type': 'chats',
-            'message': msg,
-            'sender': sender,
-            'receiver': receiver,
-            'profile_url': profileUrl,
-            'convoId': convoId,
-        }))
+    #     self.send(text_data=json.dumps({
+    #         'type': 'chats',
+    #         'message': msg,
+    #         'sender': sender,
+    #         'receiver': receiver,
+    #         'profile_url': profileUrl,
+    #         'convoId': convoId,
+    #     }))

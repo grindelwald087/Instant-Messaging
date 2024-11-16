@@ -49,5 +49,11 @@
                 <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </form>
+
+        <form id="sample" method="POST">
+            {% csrf_token %}
+            <input type="text" name="" id="san">
+            <button type="submit">sad</button>
+        </form>
     {% endfor %}
 {% endblock third_column %}

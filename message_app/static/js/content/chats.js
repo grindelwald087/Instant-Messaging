@@ -26,9 +26,20 @@ const url = `ws://${window.location.host}/ws/socket-server/`
 const chatSocket = new WebSocket(url)
 
 chatSocket.onmessage = (e) => {
-    let data = JSON.parse(e.data)
-    console.log(data)
+    const data = JSON.parse(e.data)
+    // console.log(data)
+    
 }
+
+let form = document.getElementById('sample')
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    let time = new Date()
+    console.log(time)
+    console.log(document.getElementById('san').value)
+
+})
 
 // chatSocket.onmessage = (e) => {
 //     let data = JSON.parse(e.data)

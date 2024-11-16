@@ -30,7 +30,7 @@ class conversation(models.Model):
     sender = models.CharField(max_length=255, null=True)
     receiver = models.CharField(max_length=255, null=True)
     status = models.CharField(max_length=10, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    created_at = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.message_content

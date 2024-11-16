@@ -32,7 +32,10 @@
     {% for message in context.messages %}
         <section class="d-flex gap-3 p-1 px-2 align-items-center custom_reciever {% block active %}{% endblock active %}" onclick="convo({{ message.convo_id }})">
             <img src="{{ message.receiver.profile.url | lower }}" alt="{{ message.receiver_id }}">
-            <h5 class="fw-bold m-0 text-capitalize">{{ message.receiver.first_name }} {{ message.receiver.last_name }}</h5>
+            <div class="d-flex flex-column">
+                <h5 class="fw-bold m-0 text-capitalize">{{ message.receiver.first_name }} {{ message.receiver.last_name }}</h5>
+                <span id="msg"></span>
+            </div>
         </section>
     {% endfor %}
 {% endblock second_column %}
