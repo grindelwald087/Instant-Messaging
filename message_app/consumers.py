@@ -34,8 +34,9 @@ class chatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         msg = text_data_json['message']
         user = text_data_json['user']
+        rcvr = text_data_json['receiver']
 
-        await self.insert_message_to_db(msg, user)
+        await self.insert_message_to_db(msg, user, rcvr)
         fetched_data = await self.fetching_data(user)
 
         username = fetched_data['user']['username']
@@ -81,7 +82,6 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     async def fetching_data(self, user):
         fetched_convo = await database_sync_to_async(self.fetch_data_from_convo)()
-        # fetched_msg = await database_sync_to_async(self.fetch_data_from_msg)()
         fetched_user = await database_sync_to_async(self.fetch_data_from_user)(user)
 
         fetched_data = {}
@@ -98,12 +98,6 @@ class chatConsumer(AsyncWebsocketConsumer):
                 'created_at': str(fetched_convo.created_at),
             }
         
-        # if fetched_msg:
-        #     fetched_data['msg'] = {
-        #         'type': 'msg',
-        #         'username': fetched_msg.sender
-        #     }
-
         if fetched_user:
             fetched_data['user'] = {
                 'type': 'users',
@@ -123,14 +117,14 @@ class chatConsumer(AsyncWebsocketConsumer):
         return conversation.objects.order_by('created_at').last()
     
     @database_sync_to_async
-    def insert_message_to_db(self, msg, user):
+    def insert_message_to_db(self, msg, user, rcvr):
         # convo_id = chatConsumer.generate_random_convo_id(15)
 
         conversation.objects.create(
             convo_id = 10,    
             message_content = msg,
             sender = user,
-            receiver = 'no_one_12',
+            receiver = rcvr,
             status = 'sent',
         )
     

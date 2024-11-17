@@ -31,11 +31,13 @@ form.addEventListener('submit', (e) => {
 
     let msg = e.target.compose_msg.value
     let user = e.target.user.value
+    let receiver = e.target.receiver.value
     let convo_id = e.target.convo_id.value
 
     chatSocket.send(JSON.stringify({
         'message': msg,
         'user': user,
+        'receiver': receiver,
         'convo_id': convo_id
     }))
 

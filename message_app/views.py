@@ -86,8 +86,6 @@ def register_page(request):
 # Chats Page
 def chats_page(request):
     if 'username' in request.session:
-        
-
         return render(request, 'content/chats.html', {
             'context': userProfile(request),
             
