@@ -42,8 +42,6 @@
             {% csrf_token %}
             <div class="d-flex align-items-end gap-3">
                 {{ form.compose_msg }}
-                <input type="hidden" name="profile_url" id="" value="{{ r.sender.profile.url }}">
-                <input type="hidden" name="receiver" id="receiver" value="{{ r.receiver }}">
                 <input type="hidden" name="user" id="user" value="{{ user }}">
                 <input type="hidden" name="convo_id" id="convo_id" value="{{ id }}">
                 <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>

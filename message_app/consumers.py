@@ -6,7 +6,8 @@ import string
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
 from channels.db import database_sync_to_async
-from .models import conversation
+from .models import conversation, message, users
+from .views import chats_convo_page
 
 class chatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -32,50 +33,103 @@ class chatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         msg = text_data_json['message']
+        user = text_data_json['user']
 
-        await self.insert_message_to_db(msg)
-        await self.fetching_data()
+        await self.insert_message_to_db(msg, user)
+        fetched_data = await self.fetching_data(user)
 
-        # async_to_sync(self.channel_layer.group_send)(
-        #     self.room_group_name,
-        #     {
-        #         'type': 'chat_message',
-        #         'message': msg,
-        #         'sender': sender,
-        #         'receiver': receiver,
-        #         'profileUrl': profileUrl,
-        #         'convoId': convoId,
-        #     }
-        # )
+        username = fetched_data['user']['username']
+        profile_url = fetched_data['user']['profile_url']
+
+        msg = fetched_data['convo']['message_content']
+        sender = fetched_data['convo']['sender']
+        receiver = fetched_data['convo']['receiver']
+        convo_id = fetched_data['convo']['convo_id']
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'convo_id': convo_id,
+                'msg_content': msg,
+                'sender': sender,
+                'receiver': receiver,
+
+                'username': username,
+                'profile_url': profile_url,
+            }
+        )
+
+    async def chat_message(self, event):
+        message_content = event['msg_content']
+        convo_id = event['convo_id']
+        sender = event['sender']
+
+        username = event['username']
+        profile_url = event['profile_url']
+
+
+        await self.send(text_data=json.dumps({
+            'type': 'new_chat',
+            'message_content': message_content,
+            'convo_id': convo_id,
+            'sender': sender,
+            
+            'username': username,
+            'profile_url': profile_url,
+        })) 
     
-    async def fetching_data(self):
-        fetched = await database_sync_to_async(self.fetch_data_from_db)()
+    async def fetching_data(self, user):
+        fetched_convo = await database_sync_to_async(self.fetch_data_from_convo)()
+        # fetched_msg = await database_sync_to_async(self.fetch_data_from_msg)()
+        fetched_user = await database_sync_to_async(self.fetch_data_from_user)(user)
 
-        if fetched:
-            serialized_data = {
+        fetched_data = {}
+
+        if fetched_convo:
+            fetched_data['convo'] = {
                 'type': 'new_chat',
-                'message_content_id': fetched.message_content_id,
-                'message_content': fetched.message_content,
-                'convo_id': fetched.convo_id,
-                'sender': fetched.sender,
-                'receiver': fetched.receiver,
-                'status': fetched.status,
-                'created_at': str(fetched.created_at),
+                'message_content_id': fetched_convo.message_content_id,
+                'message_content': fetched_convo.message_content,
+                'convo_id': fetched_convo.convo_id,
+                'sender': fetched_convo.sender,
+                'receiver': fetched_convo.receiver,
+                'status': fetched_convo.status,
+                'created_at': str(fetched_convo.created_at),
+            }
+        
+        # if fetched_msg:
+        #     fetched_data['msg'] = {
+        #         'type': 'msg',
+        #         'username': fetched_msg.sender
+        #     }
+
+        if fetched_user:
+            fetched_data['user'] = {
+                'type': 'users',
+                'username': fetched_user.username,
+                'profile_url': str(fetched_user.profile.url),
             }
 
-            await self.send(text_data=json.dumps(serialized_data))
+        return fetched_data
+
+    # def fetch_latest_msg(self):
+    #     return message.objects.filter(sender__username = 'bastard_11').first()
     
-    def fetch_data_from_db(self):
+    def fetch_data_from_user(self, user):
+        return users.objects.filter(username = user).first()
+    
+    def fetch_data_from_convo(self):
         return conversation.objects.order_by('created_at').last()
     
     @database_sync_to_async
-    def insert_message_to_db(self, msg):
+    def insert_message_to_db(self, msg, user):
         # convo_id = chatConsumer.generate_random_convo_id(15)
 
         conversation.objects.create(
             convo_id = 10,    
             message_content = msg,
-            sender = 'bastard_11',
+            sender = user,
             receiver = 'no_one_12',
             status = 'sent',
         )
@@ -88,18 +142,6 @@ class chatConsumer(AsyncWebsocketConsumer):
         
     #     return random_id
     
-    # def chat_message(self, event):
-    #     msg = event['message']
-    #     sender = event['sender']
-    #     receiver = event['receiver']
-    #     profileUrl = event['profileUrl']
-    #     convoId = event['convoId']
+    
 
-    #     self.send(text_data=json.dumps({
-    #         'type': 'chats',
-    #         'message': msg,
-    #         'sender': sender,
-    #         'receiver': receiver,
-    #         'profile_url': profileUrl,
-    #         'convoId': convoId,
-    #     }))
+        

@@ -8,15 +8,15 @@ def userProfile(request):
     userName = request.session.get('username')
     userProfiles = users.objects.get(username = userName)
     messages = message.objects.filter(sender_id = userName)
-    latestMsg = conversation.objects.filter(sender = userName).order_by('-created_at').first()
     convoId = conversation.objects.filter(sender = userName).first()
+    latestMsg = conversation.objects.filter(convo_id = 10).order_by('-created_at').first()
 
     return {
         'userProfiles': userProfiles,
         'messages': messages,
         'user': userName,
-        'latest': latestMsg,
-        'convoId': convoId
+        'convoId': convoId,
+        'latestMsg': latestMsg
     }
 
 # Redirect Page for unknown URL's
@@ -86,8 +86,11 @@ def register_page(request):
 # Chats Page
 def chats_page(request):
     if 'username' in request.session:
+        
+
         return render(request, 'content/chats.html', {
-            'context': userProfile(request)
+            'context': userProfile(request),
+            
         })
     else:
         return redirect('login')

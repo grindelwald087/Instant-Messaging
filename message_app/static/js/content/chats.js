@@ -25,19 +25,18 @@ messageInput.addEventListener('input', function () {
 const url = `ws://${window.location.host}/ws/socket-server/`
 const chatSocket = new WebSocket(url)
 
-// chatSocket.onmessage = (e) => {
-//     const data = JSON.parse(e.data)
-//     console.log(data.message_content)
-// }
-
 let form = document.getElementById('form')
 form.addEventListener('submit', (e) => {
     e.preventDefault()
 
     let msg = e.target.compose_msg.value
+    let user = e.target.user.value
+    let convo_id = e.target.convo_id.value
 
     chatSocket.send(JSON.stringify({
         'message': msg,
+        'user': user,
+        'convo_id': convo_id
     }))
 
     form.reset()
@@ -48,54 +47,35 @@ form.addEventListener('submit', (e) => {
 chatSocket.onmessage = (e) => {
     let data = JSON.parse(e.data)
     let display = document.getElementById('custom_convo')
-    // let user = document.getElementById('user').value
-    // let receiver = document.getElementById('receiver').value
-    // let convo_id = document.getElementById('convo_id').value
-    // let custom_new_msg = document.getElementById('custom_new_msg')
+    let convo_id = document.getElementById('convo_id').value
+    let user = document.getElementById('user').value
 
-    if (data.convo_id == 10) {
-        if (data.type === 'new_chat') {
-            let messageHtml = ``
+    let latest_msg = document.getElementById('latest_msg')
     
-            if (data.sender == 'bastard_11') {
-                messageHtml += `
+    if (data.convo_id == convo_id) {
+        if (data.type === 'new_chat') {
+            let appendNewMessage = ``
+    
+            if (data.sender == user) {
+                appendNewMessage += `
                     <div class="align-self-end d-flex gap-2 align-items-end">
                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
-                        <img src="" alt="${data.sender}">
+                        <img src="${data.profile_url.toLowerCase()}" alt="${data.sender}">
                     </div>`
+                
+                latest_msg.innerText = `You: ${data.message_content}`
             } else {
-                messageHtml += `
+                appendNewMessage += `
                     <div class="d-flex gap-2 align-items-end">
-                        <img src="" alt="${data.receiver}">
+                        <img src="${data.profile_url.toLowerCase()}" alt="${data.receiver}">
                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
                     </div>`
+
+                latest_msg.innerText = `${data.message_content}`
             }
     
-            display.insertAdjacentHTML('beforeend', messageHtml)
-    
+            display.insertAdjacentHTML('beforeend', appendNewMessage)
             display.scrollTop = display.scrollHeight
         }
     }
 }
-
-// let form = document.getElementById('form')
-// form.addEventListener('submit', (e) => {
-//     e.preventDefault()
-//     let message = e.target.compose_msg.value
-//     let user = e.target.user.value
-//     let receiver = e.target.receiver.value
-//     let url = e.target.profile_url.value
-//     let convoId = e.target.convo_id.value
-
-//     chatSocket.send(JSON.stringify({
-//         'message': message,
-//         'user': user,
-//         'receiver': receiver,
-//         'profileUrl': url,
-//         'convoId': convoId,
-//     }))
-
-//     form.reset()
-
-    
-// })
