@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{% static "fontawesome-6.0.0/css/all.min.css" %}">
 </head>
 <body>
-    <main class="container-fluid vh-100 py-3 px-4">
+    <main class="container-fluid vh-100 py-3 px-4 custom_theme">
         <div class="row h-100 gap-2">
             <div class="col-auto d-flex flex-column py-3 align-items-center gap-4 custom_nav">
                 <a href="{% url "profile" %}"><img src="{{ context.userProfiles.profile.url | lower }}" alt="{{ context.userProfiles.username }}" title="{{ context.userProfiles.username }} ( {{ context.userProfiles.first_name | title }} {{ context.userProfiles.last_name | title }} )"></a>

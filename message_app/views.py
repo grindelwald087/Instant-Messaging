@@ -5,19 +5,30 @@ from .models import users, message, conversation
 from .forms import login_form, register_form, compose_msg_form
 
 def userProfile(request):
-    userName = request.session.get('username')
-    userProfiles = users.objects.get(username = userName)
-    messages = message.objects.filter(sender_id = userName)
-    convoId = conversation.objects.filter(sender = userName).first()
-    latestMsg = conversation.objects.filter(convo_id = 10).order_by('-created_at').first()
+    if 'username' in request.session:
+        userName = request.session.get('username')
+        userProfiles = users.objects.get(username = userName)
+        messages = message.objects.filter(sender_id = userName)
+        userName = request.session.get('username')
+        convoId = message.objects.filter(sender_id = userName).values('convo_id')
 
-    return {
-        'userProfiles': userProfiles,
-        'messages': messages,
-        'user': userName,
-        'convoId': convoId,
-        'latestMsg': latestMsg
-    }
+        latestMsgs = []
+
+        for id in convoId:
+            latestMsg = conversation.objects.order_by('created_at').filter(convo_id = id['convo_id']).values_list(
+                'convo_id',
+                'message_content',
+                'sender',
+                'status'
+                ).last()
+            latestMsgs.append(latestMsg)
+        
+        return {
+            'userProfiles': userProfiles,
+            'messages': messages,
+            'user': userName,
+            'latestMsg': latestMsgs,
+        }
 
 # Redirect Page for unknown URL's
 def redirect_page(request, ):
@@ -88,7 +99,6 @@ def chats_page(request):
     if 'username' in request.session:
         return render(request, 'content/chats.html', {
             'context': userProfile(request),
-            
         })
     else:
         return redirect('login')

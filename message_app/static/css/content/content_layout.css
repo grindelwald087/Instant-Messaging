@@ -1,5 +1,10 @@
+/* .custom_theme {
+    background-color: #161616;
+} */
+
 .custom_chats {
-    background-color: hsl(0, 0%, 90%);
+    /* background-color: #232323; */
+    background-color: #dddddd;
     border-radius: 10px;
 }
 

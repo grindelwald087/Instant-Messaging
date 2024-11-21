@@ -9,7 +9,9 @@ from channels.db import database_sync_to_async
 from .models import conversation, message, users
 from .views import chats_convo_page
 
+# ~~~~~~~~~~ Websocket Connection ~~~~~~~~~~ #
 class chatConsumer(AsyncWebsocketConsumer):
+    # ~~~~~~~~~~ Accept Connection ~~~~~~~~~~ #
     async def connect(self):
 
         self.room_group_name = 'chats'
@@ -32,11 +34,12 @@ class chatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        convoId = text_data_json['convo_id']
         msg = text_data_json['message']
         user = text_data_json['user']
         rcvr = text_data_json['receiver']
 
-        await self.insert_message_to_db(msg, user, rcvr)
+        await self.insert_message_to_db(convoId, msg, user, rcvr)
         fetched_data = await self.fetching_data(user)
 
         username = fetched_data['user']['username']
@@ -117,11 +120,11 @@ class chatConsumer(AsyncWebsocketConsumer):
         return conversation.objects.order_by('created_at').last()
     
     @database_sync_to_async
-    def insert_message_to_db(self, msg, user, rcvr):
+    def insert_message_to_db(self, convoId, msg, user, rcvr):
         # convo_id = chatConsumer.generate_random_convo_id(15)
 
         conversation.objects.create(
-            convo_id = 10,    
+            convo_id = convoId,    
             message_content = msg,
             sender = user,
             receiver = rcvr,

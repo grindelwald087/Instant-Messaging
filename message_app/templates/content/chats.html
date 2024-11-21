@@ -34,16 +34,19 @@
             <img src="{{ message.receiver.profile.url | lower }}" alt="{{ message.receiver_id }}">
             <div class="d-flex flex-column">
                 <h5 class="fw-bold m-0 text-capitalize">{{ message.receiver.first_name }} {{ message.receiver.last_name }}</h5>
-                    {% if message.convo_id|add:0 == context.convoId.convo_id|add:0 %}
-                        {% if context.latestMsg.receiver == user and context.latestMsg %}
-                            <span id="latest_msg">{{ context.latestMsg }}</span>
-                        {% elif context.latestMsg.sender == user and context.latestMsg %}
-                            <span id="latest_msg">You: {{ context.latestMsg }}</span>
+                {% for latest in context.latestMsg %}
+                    {% if message.convo_id == latest.0|add:0 %}
+                        {% if message.receiver_id == latest.2 %}
+                            <span data-receiver-id="{{message.receiver_id}}" {% if latest.3 == 'sent' %}
+                                class="fw-bold"
+                            {% endif %}>{{latest.1|truncatechars:30}}</span>
                         {% else %}
-                            <span id="latest_msg"></span>
+                            <span data-receiver-id="{{message.receiver_id}}" {% if latest.3 == 'sent' %}
+                                class="fw-bold"
+                            {% endif %}>You: {{latest.1|truncatechars:30}}</span>
                         {% endif %}
                     {% endif %}
-            </div>
+                {% endfor %}
         </section>
     {% endfor %}
 {% endblock second_column %}

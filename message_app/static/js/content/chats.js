@@ -51,8 +51,15 @@ chatSocket.onmessage = (e) => {
     let display = document.getElementById('custom_convo')
     let convo_id = document.getElementById('convo_id').value
     let user = document.getElementById('user').value
+    let receiver = document.getElementById('receiver').value
+    let latest_msg = document.querySelector(`[data-receiver-id="${receiver}"]`)
 
-    let latest_msg = document.getElementById('latest_msg')
+    function truncateText(text, maxLength) {
+        if (text.length > maxLength) {
+          return text.substring(0, maxLength) + '...'
+        }
+        return text
+    }
     
     if (data.convo_id == convo_id) {
         if (data.type === 'new_chat') {
@@ -65,7 +72,7 @@ chatSocket.onmessage = (e) => {
                         <img src="${data.profile_url.toLowerCase()}" alt="${data.sender}">
                     </div>`
                 
-                latest_msg.innerText = `You: ${data.message_content}`
+                latest_msg.innerText = `You: ${truncateText(data.message_content, 30)}`
             } else {
                 appendNewMessage += `
                     <div class="d-flex gap-2 align-items-end">
@@ -73,11 +80,15 @@ chatSocket.onmessage = (e) => {
                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
                     </div>`
 
-                latest_msg.innerText = `${data.message_content}`
+                latest_msg.innerText = `${truncateText(data.message_content, 30)}`
             }
     
             display.insertAdjacentHTML('beforeend', appendNewMessage)
             display.scrollTop = display.scrollHeight
         }
     }
+}
+
+chatSocket.onclose = function(e) {
+    console.error('Websocket closed unexpectedly')
 }

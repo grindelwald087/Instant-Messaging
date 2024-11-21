@@ -23,7 +23,7 @@
                 </div>
             </div>
         </div>
-        <div id="custom_convo" class="d-flex flex-column gap-3 p-5 overflow-y-auto custom_convo">
+        <div id="custom_convo" class="d-flex flex-column gap-1 p-5 overflow-y-auto custom_convo">
             {% for content in messageContent %}
                 {% if user == content.sender %}
                     <div class="align-self-end d-flex gap-2 align-items-end">
@@ -45,7 +45,7 @@
                 <input type="hidden" name="receiver" id="receiver" value="{{ r.receiver }}">
                 <input type="hidden" name="user" id="user" value="{{ user }}">
                 <input type="hidden" name="convo_id" id="convo_id" value="{{ id }}">
-                <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </form>
     {% endfor %}
