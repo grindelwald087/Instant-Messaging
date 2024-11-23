@@ -28,6 +28,7 @@
     height: 0;
     resize: none;
     border: hsl(210, 100%, 50%), solid 1px !important;
+    width: 80% !important;
 }
 
 .custom_single_msg {
@@ -35,7 +36,9 @@
     background-color: hsl(210, 100%, 50%);
     border-radius: 15px;
     max-width: 500px;
-    flex-wrap: wrap;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 
 .custom_convo div img {
@@ -51,4 +54,20 @@
     border-radius: 100px;
     height: 30px;
     width: 30px;
+}
+
+.custom_position_relative {
+    position: relative;
+    display: inline-block;
+}
+
+.custom_status_indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 13px;
+    height: 13px;
+    background-color: hsl(120, 100%, 50%);
+    border: 1px solid hsl(0, 0%, 100%);
+    border-radius: 50%;
 }

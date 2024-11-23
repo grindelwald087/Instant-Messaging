@@ -111,15 +111,12 @@ def chats_convo_page(request, id):
         user = request.session.get('username')
         receiver = message.objects.filter(convo_id = id, sender_id = user)
         messageContent = conversation.objects.filter(convo_id = id)
-        userReceiver = conversation.objects.filter(sender = user).values('receiver').first()
-        countMsg = conversation.objects.filter(receiver = userReceiver, status = 'sent').count()
 
         return render(request, 'content/convo.html', {
             'receiver': receiver,
             'context': userProfile(request),
             'id': id,
             'messageContent': messageContent,
-            'countMsg': userReceiver,
             'user': user,
             'form': form
         })

@@ -7,13 +7,14 @@ from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
 from channels.db import database_sync_to_async
 from .models import conversation, message, users
-from .views import chats_convo_page
 
 # ~~~~~~~~~~ Websocket Connection ~~~~~~~~~~ #
 class chatConsumer(AsyncWebsocketConsumer):
     # ~~~~~~~~~~ Accept Connection ~~~~~~~~~~ #
     async def connect(self):
 
+        # self.convo_id = self.scope['url_route']['kwargs']['convo_id']
+        # self.room_group_name = f'convo_{self.convo_id}'
         self.room_group_name = 'chats'
 
         await self.channel_layer.group_add(
@@ -109,9 +110,6 @@ class chatConsumer(AsyncWebsocketConsumer):
             }
 
         return fetched_data
-
-    # def fetch_latest_msg(self):
-    #     return message.objects.filter(sender__username = 'bastard_11').first()
     
     def fetch_data_from_user(self, user):
         return users.objects.filter(username = user).first()

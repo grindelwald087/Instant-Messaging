@@ -83,6 +83,6 @@ class compose_msg_form(forms.Form):
         widget=forms.Textarea(attrs={
             'class': 'form-control custom_message',
             'id': 'custom_message',
-            'maxlength': 200,
+            'maxlength': 1000,
         })
     )

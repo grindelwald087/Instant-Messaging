@@ -26,7 +26,7 @@ class conversation(models.Model):
 
     message_content_id = models.BigAutoField(primary_key=True)
     convo_id = models.CharField(max_length=20, null=True)
-    message_content = models.CharField(max_length=255)
+    message_content = models.CharField(max_length=1000)
     sender = models.CharField(max_length=255, null=True)
     receiver = models.CharField(max_length=255, null=True)
     status = models.CharField(max_length=10, null=True)

@@ -1,58 +1,76 @@
 window.onload = function () {
     const container = document.getElementById('custom_convo')
-    container.scrollTop = container.scrollHeight
-}
+    const msg = document.getElementById('custom_message')
 
+    container.scrollTop = container.scrollHeight
+    msg.focus()
+}
 
 function convo(id) {
-    location.href = id // To Conversation
+    location.href = id
+
 }
 
+const display = document.getElementById('custom_convo')
 const messageInput = document.getElementById('custom_message')
-const maxHeight = 100 // Set maximum height in pixels
+const maxHeight = 100
 
 messageInput.addEventListener('input', function () {
-    this.style.height = '0px' // Reset height to recalculate
+    this.style.height = '0px'
     if (this.scrollHeight > maxHeight) {
-        this.style.height = maxHeight + 'px' // Set to max height if exceeded
-        this.style.overflowY = 'auto' // Show scrollbar when max height is reached
+        this.style.height = maxHeight + 'px'
+        this.style.overflowY = 'auto'
     } else {
-        this.style.height = this.scrollHeight + 'px' // Expand to fit content
-        this.style.overflowY = 'hidden' // Hide scrollbar until max height is reached
+        this.style.height = this.scrollHeight + 'px'
+        this.style.overflowY = 'hidden'
+        display.scrollTop = display.scrollHeight
     }
 })
 
-const url = `ws://${window.location.host}/ws/socket-server/`
-const chatSocket = new WebSocket(url)
+// const convo_id = document.getElementById('convo_id').value
 
-let form = document.getElementById('form')
-form.addEventListener('submit', (e) => {
-    e.preventDefault()
+// const url = `ws://${window.location.host}/ws/socket-server/`
+// const chatSocket = new WebSocket(url)
 
-    let msg = e.target.compose_msg.value
-    let user = e.target.user.value
-    let receiver = e.target.receiver.value
-    let convo_id = e.target.convo_id.value
+// if (chatSocket) {
+//     console.log('connected')
+// }
 
-    chatSocket.send(JSON.stringify({
-        'message': msg,
-        'user': user,
-        'receiver': receiver,
-        'convo_id': convo_id
-    }))
+const formToSubmit = document.getElementById('form')
 
-    form.reset()
-    messageInput.style.height = '0'
-    messageInput.style.overflowY = 'hidden'
+formToSubmit.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        if (!e.shiftKey) {
+            e.preventDefault()
+            const msg = document.getElementById('custom_message').value.trim()
+            const user = document.getElementById('user').value
+            const receiver = document.getElementById('receiver').value
+            const convo_id = document.getElementById('convo_id').value
+
+            if (msg == '') {
+                return
+            }
+
+            chatSocket.send(JSON.stringify({
+                'message': msg,
+                'user': user,
+                'receiver': receiver,
+                'convo_id': convo_id
+            }))
+
+            formToSubmit.reset()
+            messageInput.style.height = '0'
+            messageInput.style.overflowY = 'hidden'
+        }
+    }
 })
 
 chatSocket.onmessage = (e) => {
-    let data = JSON.parse(e.data)
-    let display = document.getElementById('custom_convo')
-    let convo_id = document.getElementById('convo_id').value
-    let user = document.getElementById('user').value
-    let receiver = document.getElementById('receiver').value
-    let latest_msg = document.querySelector(`[data-receiver-id="${receiver}"]`)
+    const data = JSON.parse(e.data)
+    const display = document.getElementById('custom_convo')
+    const convo_id = document.getElementById('convo_id').value
+    const user = document.getElementById('user').value
+    const latest_msg = document.querySelector(`[data-convo-id="${data.convo_id}"]`)
 
     function truncateText(text, maxLength) {
         if (text.length > maxLength) {
@@ -71,20 +89,24 @@ chatSocket.onmessage = (e) => {
                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
                         <img src="${data.profile_url.toLowerCase()}" alt="${data.sender}">
                     </div>`
-                
-                latest_msg.innerText = `You: ${truncateText(data.message_content, 30)}`
             } else {
                 appendNewMessage += `
                     <div class="d-flex gap-2 align-items-end">
                         <img src="${data.profile_url.toLowerCase()}" alt="${data.receiver}">
                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
                     </div>`
-
-                latest_msg.innerText = `${truncateText(data.message_content, 30)}`
             }
     
             display.insertAdjacentHTML('beforeend', appendNewMessage)
             display.scrollTop = display.scrollHeight
+        }
+    }   
+
+    if (latest_msg) {
+        if (data.sender == user) {
+            latest_msg.innerHTML = `You: ${truncateText(data.message_content, 30)}`
+        } else {
+            latest_msg.innerHTML = truncateText(data.message_content, 35)
         }
     }
 }
