@@ -1,0 +1,1 @@
+DJANGO_SETTINGS_MODULE=Messaging.settings daphne -b localhost -p 8000 Messaging.asgi:application

@@ -1,0 +1,6 @@
+django
+mysql-connector-python
+mysqlclient
+pillow
+channels
+daphne

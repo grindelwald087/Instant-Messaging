@@ -12,9 +12,6 @@ from .models import conversation, message, users
 class chatConsumer(AsyncWebsocketConsumer):
     # ~~~~~~~~~~ Accept Connection ~~~~~~~~~~ #
     async def connect(self):
-
-        # self.convo_id = self.scope['url_route']['kwargs']['convo_id']
-        # self.room_group_name = f'convo_{self.convo_id}'
         self.room_group_name = 'chats'
 
         await self.channel_layer.group_add(
