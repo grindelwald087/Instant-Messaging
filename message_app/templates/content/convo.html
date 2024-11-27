@@ -31,12 +31,17 @@
         <div id="custom_convo" class="d-flex flex-column gap-1 p-5 overflow-y-auto custom_convo">
             {% for content in messageContent %}
                 {% if user == content.sender %}
-                    <div class="align-self-end d-flex gap-2 align-items-end">
-                        <pre class="px-3 py-2 m-0 custom_single_msg">{{ content.message_content }}</pre>
+                    <div class="align-self-end d-flex gap-2 align-items-start">
+                        <div class="d-flex flex-column gap-1">
+                            <pre class="px-3 py-2 m-0 custom_single_msg">{{ content.message_content }}</pre>
+                            {% if content.status == 'seen' %}
+                                <img src="{{ r.receiver.profile.url | lower }}" alt="{{ r.receiver }}" title="{{ r.receiver }}" class="align-self-end custom_convo_seen">
+                            {% endif %}
+                        </div>
                         <img src="{{ r.sender.profile.url | lower }}" alt="{{ r.sender }}" title="{{ r.sender }}">
                     </div>
                 {% else %}
-                    <div class="d-flex gap-2 align-items-end">
+                    <div class="d-flex gap-2 align-items-start">
                         <img src="{{ r.receiver.profile.url | lower }}" alt="{{ r.receiver }}" title="{{ r.receiver }}">
                         <pre class="px-3 py-2 m-0 custom_single_msg">{{ content.message_content }}</pre>
                     </div>

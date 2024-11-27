@@ -11,6 +11,7 @@ urlpatterns = [
     # Login / Register
     path('login/', views.login_page, name='login'),
     path('register/', views.register_page,  name='register'),
+    path('register/<str:recipient>', views.send_otp, name="otp"),
     # Contents
     path('chats/', views.chats_page, name='chats'),
     path('chats/<int:id>', views.chats_convo_page, name='convo'),

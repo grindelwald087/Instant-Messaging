@@ -1,7 +1,4 @@
 import json
-import asyncio
-import random
-import string
 
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
@@ -125,15 +122,3 @@ class chatConsumer(AsyncWebsocketConsumer):
             receiver = rcvr,
             status = 'sent',
         )
-    
-    # @staticmethod
-    # def generate_random_convo_id(length = 8):
-    #     characters = string.ascii_letters + string.digits
-        
-    #     random_id = ''.join(random.choices(characters, k=length))
-        
-    #     return random_id
-    
-    
-
-        

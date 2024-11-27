@@ -27,14 +27,12 @@ messageInput.addEventListener('input', function () {
     }
 })
 
-// const convo_id = document.getElementById('convo_id').value
+const url = `ws://${window.location.host}/ws/socket-server/`
+const chatSocket = new WebSocket(url)
 
-// const url = `ws://${window.location.host}/ws/socket-server/`
-// const chatSocket = new WebSocket(url)
-
-// if (chatSocket) {
-//     console.log('connected')
-// }
+if (chatSocket) {
+    console.log('connected')
+}
 
 const formToSubmit = document.getElementById('form')
 
@@ -85,13 +83,13 @@ chatSocket.onmessage = (e) => {
     
             if (data.sender == user) {
                 appendNewMessage += `
-                    <div class="align-self-end d-flex gap-2 align-items-end">
+                    <div class="align-self-end d-flex gap-2 align-items-start">
                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
                         <img src="${data.profile_url.toLowerCase()}" alt="${data.sender}">
                     </div>`
             } else {
                 appendNewMessage += `
-                    <div class="d-flex gap-2 align-items-end">
+                    <div class="d-flex gap-2 align-items-start">
                         <img src="${data.profile_url.toLowerCase()}" alt="${data.receiver}">
                         <pre class="px-3 py-2 m-0 custom_single_msg">${data.message_content}</pre>
                     </div>`

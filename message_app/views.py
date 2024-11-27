@@ -1,5 +1,10 @@
+import random
+import string
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.hashers import make_password, check_password
+from django.http import JsonResponse
+from django.core.mail import EmailMessage
 from django.contrib import messages
 from .models import users, message, conversation
 from .forms import login_form, register_form, compose_msg_form
@@ -29,6 +34,15 @@ def userProfile(request):
             'user': userName,
             'latestMsg': latestMsgs,
         }
+
+# Send OTP ot Email
+@staticmethod
+def generate_otp(length = 8):
+    characters = string.ascii_letters + string.digits
+    
+    random_id = ''.join(random.choices(characters, k=length))
+    
+    return random_id
 
 # Redirect Page for unknown URL's
 def redirect_page(request, ):
@@ -80,19 +94,53 @@ def register_page(request):
         form = register_form(request.POST)
         
         if form.is_valid():
-            users.objects.create (
-                first_name = form.cleaned_data['first_name'],
-                last_name = form.cleaned_data['last_name'],
-                email = form.cleaned_data['email'],
-                username = form.cleaned_data['username'],
-                password = make_password(form.cleaned_data['password'])
-            )
+            otp = form.cleaned_data['otp']
+            generated = request.session.get('generated_otp')
 
-            return redirect('chats')
+            if (generated == otp):
+                users.objects.create (
+                    first_name = form.cleaned_data['first_name'],
+                    last_name = form.cleaned_data['last_name'],
+                    gender = form.cleaned_data['gender'],
+                    email = form.cleaned_data['email'],
+                    username = form.cleaned_data['username'],
+                    password = make_password(form.cleaned_data['password'])
+                )
+                del request.session['generated_otp']
+                request.session['username'] = form.cleaned_data['username']
+                return redirect('chats')
+            else:
+                messages.error(request, "Incorrect OTP.")
+    elif 'generated_otp' in request.session:
+        del request.session['generated_otp']
+        form = register_form()
     else:
         form = register_form()
 
-    return render(request, 'register.html', {'register_form': form})
+    return render(request, 'register.html', {
+        'register_form': form,
+        })
+
+# Send OTP to Email
+def send_otp(request, recipient):
+    if request.method == 'GET':
+        otp = generate_otp()
+        request.session['generated_otp'] = otp
+
+        sender = 'marichat.11.26.24@gmail.com'
+        
+        email = EmailMessage(
+            subject = "MariChat",
+            body = f'<b>{otp}</b> is your MariChat One Time Password (OTP). Don\'t share this to others.',
+            from_email = sender,
+            to = [recipient],
+        )
+        email.content_subtype = 'html'
+        email.send()
+
+        return JsonResponse({
+            'success': True,
+        })
 
 # Chats Page
 def chats_page(request):

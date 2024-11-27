@@ -46,6 +46,16 @@
     height: 25px;
 }
 
+.custom_convo_seen {
+    width: 15px !important;
+    height: 15px !important;
+}
+
+.custom_msg_seen {
+    width: 20px !important;
+    height: 20px !important;
+}
+
 .custom_created_at {
     font-size: 10px;
 }

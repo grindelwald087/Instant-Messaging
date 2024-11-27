@@ -9,57 +9,95 @@
 
 <!-- CSS -->
 {% block CSS %}
-
     <link rel="stylesheet" href="{% static "css/register.css" %}">
-
 {% endblock CSS %}
 
 <!-- Render Content to Layout -->
 {% block content %}
-
     <main class="container">
-        <div class="row d-flex justify-content-center my-5">
-            <form method="post" class="col-5 p-5 d-flex flex-column gap-3 border rounded">
+        <div class="justify-content-center border rounded w-75 my-5 mx-auto p-5">
+            <h1 class="text-center text-danger mb-5">MariChat <span class="text-dark fs-4">REGISTER</span></h1>
+            <form method="post" class="row">
                 {% csrf_token %}
-                <h1 class="text-center text-danger mb-5">MariChat <span class="text-dark fs-4">REGISTER</span></h1>
-                <div class="d-flex justify-content-between gap-3">
-                    <section >
-                        <label for="fname">First Name</label>
-                        {{ register_form.first_name }}
-                    </section>
-                    <section >
-                        <label for="lname">Last Name</label>
-                        {{ register_form.last_name }}
-                    </section>
+                <div class="col d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-between gap-3">
+                        <div>
+                            <label for="fname">First Name</label>
+                            {{ register_form.first_name }}
+                            {% for error in register_form.first_name.errors %}
+                                <span id="fnameError" class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            <label for="lname">Last Name</label>
+                            {{ register_form.last_name }}
+                            {% for error in register_form.last_name.errors %}
+                                <span id="lnameError" class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="">Gender</label>
+                        <div class="d-flex gap-3">
+                            {% for radio in register_form.gender %}
+                                <label>{{ radio }}</label><br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="uname">Username</label>
+                        {{ register_form.username }}
+                        {% for error in register_form.username.errors %}
+                            <span id="unameError" class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        {{ register_form.password }}
+                        {% for error in register_form.password.errors %}
+                            <span id="passError" class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <label for="confirm_password">Retype Password</label>
+                        {{ register_form.confirm_password }}
+                        {% for error in register_form.confirm_password.errors %}
+                            <span id="confError" class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div>
-                    <label for="email">Email</label>
-                    {{ register_form.email }}
+                <div class="col d-flex flex-column gap-3">
+                    <div>
+                        <label for="email">Email</label>
+                        <div class="input-group">
+                            {{ register_form.email }}
+                            <button type="button" onclick="sendOTP()" id="send" class="btn btn-primary border rounded ms-1">Send OTP</button>
+                        </div>
+                        {% for error in register_form.email.errors %}
+                            <span id="emailError" class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                        <span id="emptyEmail" class="text-danger" style="display: none">Enter email.</span>
+                    </div>
+                    <div>
+                        <label for="otp">Check your email for OTP</label>
+                        {{ register_form.otp }}
+                        {% if messages %}
+                            {% for msg in messages %}
+                                <span id="otpError" class="text-danger">{{ msg }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
-                <div>
-                    <label for="uname">Username</label>
-                    {{ register_form.username }}
-                    {% for error in register_form.username.errors %}
-                        <span class="text-danger">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div>
-                    <label for="password">Password</label>
-                    {{ register_form.password }}
-                </div>
-                <div>
-                    <label for="confirm_password">Retype Password</label>
-                    {{ register_form.confirm_password }}
-                </div>
-                <button type="submit" class="btn btn-primary my-3">REGISTER</button>
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-end align-items-center gap-5">
                     <a href="{% url "login" %}" class="text-decoration-none text-danger">sign in</a>
+                    <button type="submit" class="btn btn-primary my-3">REGISTER</button>
                 </div>
             </form>
         </div>
     </main>
-
 {% endblock content %}
 
 <!-- JS -->
-{% block JS %}{% endblock JS %}
+{% block JS %}
+    <script src="{% static "js/register.js" %}"></script>
+{% endblock JS %}

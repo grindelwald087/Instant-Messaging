@@ -13,6 +13,7 @@ class users(models.Model):
     profile = models.ImageField(upload_to='images/', null=False, default='images/default-profile.jpg')
     first_name = models.CharField(max_length=50, null=False, default='')
     last_name = models.CharField(max_length=50, null=False, default='')
+    gender = models.CharField(max_length=10, null=False, default='')
     status = models.CharField(max_length=10, null=False, default='online')
     created_at = models.DateTimeField(auto_now_add=True, null=False)
 
