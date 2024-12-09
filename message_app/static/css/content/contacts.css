@@ -1,0 +1,28 @@
+#display_profile {
+    display: none;
+}
+
+.custom_gif {
+    width: 50%;
+    height: 50%;
+    border-radius: 10px;
+}
+
+.custom_search_display {
+    display: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.custom_search_display:hover {
+    background-color: hsl(0, 0%, 50%);
+}
+
+.custom_display_profile {
+    width: 100px;
+    height: 100px;
+}
+
+.custom_display {
+    margin-top: 150px;
+}

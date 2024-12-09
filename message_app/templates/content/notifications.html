@@ -9,7 +9,7 @@
 
 <!-- CSS -->
 {% block CSS %}
-
+    <link rel="stylesheet" href="{% static "css/content/notifications.css" %}">
 {% endblock CSS %}
 
 <!-- Active Button -->
@@ -23,11 +23,21 @@
 {% block second_column %}
     <h4 class="fw-bold">Notifications</h4>
     <input type="search" name="" id="" placeholder="Search Notifications" class="form-control mb-3">
+
+    <div>
+        {% for n in notif %}
+            <div class="d-flex flex-column px-2 py-1 mb-1 custom_req" onclick="sad()">
+                <b>{{n.request_from | upper }}</b>
+                <span>{{n.message_content}}</span>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock second_column %}
 
 {% block third_column %}
-
 {% endblock third_column %}
 
 <!-- JS -->
-{% block JS %}{% endblock JS %}
+{% block JS %}
+    <script src="{% static "js/content/notifications.js" %}"></script>
+{% endblock JS %}

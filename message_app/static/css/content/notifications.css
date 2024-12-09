@@ -1,0 +1,8 @@
+.custom_req {
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.custom_req:hover {
+    background-color: hsl(0, 0%, 50%);
+}

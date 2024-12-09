@@ -49,3 +49,17 @@ class message(models.Model):
 
     def __str__(self):
         return str(self.sender)
+    
+# Notification Table
+class notification(models.Model):
+    class Meta:
+        db_table = 'notification'
+
+    notif_fk = models.ForeignKey(users, on_delete=models.CASCADE, null=True ,related_name='user', default=1)
+    message_content = models.CharField(max_length=255, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    request_to = models.CharField(max_length=50, null=True)
+    request_from = models.CharField(max_length=50, null=True)
+
+    def __str__(self):
+        return self.request_from

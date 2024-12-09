@@ -9,7 +9,7 @@
 
 <!-- CSS -->
 {% block CSS %}
-
+    <link rel="stylesheet" href="{% static "css/content/contacts.css" %}">
 {% endblock CSS %}
 
 <!-- Active Button -->
@@ -21,13 +21,72 @@
 
 <!-- Render Content to Layout -->
 {% block second_column %}
+    <input type="hidden" id="current_user" value="{{ context.user }}">
     <h4 class="fw-bold">Contacts</h4>
-    <input type="search" name="" id="" placeholder="Search Contacts" class="form-control mb-3">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.search_query }}
+    </form>
+    {% if fetched %}    
+        <div id="contacts" class="d-flex gap-3 align-items-center p-1 px-2 mt-2 custom_search_display">
+            <img src="{{ fetched.profile.url }}" alt="{{ fetched.username }}">
+            <span class="fw-bold fs-4 text-capitalize">{{ fetched.first_name }} {{ fetched.last_name }}</span>
+        </div>
+    {% elif none %}
+    {% else %}
+        <span class="fw-bold fs-3 mt-2 text-center">User does not exist.</span>
+    {% endif %}
 {% endblock second_column %}
 
 {% block third_column %}
+    <div id="display">
+        <div class="d-flex flex-column justify-content-center align-items-center mt-5">
+            <h1>Welcome to <span class="text-danger">MariChat</span></h1>
+            <h5>start your conversation by adding your favorite person</h5>
+            <img src="{% static "images/searching.gif" %}" alt="chatting" class="custom_gif mt-5">
+        </div>
+    </div>
 
+    <div id="display_profile" class="custom_display">
+        <div class="d-flex align-items-center flex-column gap-5 w-100 h-100 mx-auto">
+            <div class="d-flex justify-content-center gap-5">
+                <img src="{{ fetched.profile.url }}" alt="{{ fetched.username }}" id="profile" class="custom_display_profile">
+                <div class="d-flex flex-column gap-3">
+                    <section class="d-flex flex-column">
+                        <span>Full Name:</span>
+                        <span class="fw-bold fs-3 text-capitalize">{{ fetched.first_name }} {{ fetched.last_name }}</span>
+                    </section>
+                    <section class="d-flex flex-column">
+                        <span>Gender:</span>
+                        <span class="fw-bold fs-4">{{ fetched.gender }}</span>
+                    </section>
+                </div>
+                <div class="d-flex flex-column gap-3">
+                    <section class="d-flex flex-column">
+                        <span>Status:</span>
+                        <span class="fw-bold fs-4 text-capitalize">{{ fetched.status }}</span>
+                    </section>
+                    <section class="d-flex flex-column">
+                        <span>Joined on:</span>
+                        <span class="fw-bold fs-4">{{ fetched.created_at | date:"F j, Y" }}</span>
+                    </section>
+                </div>
+            </div>
+                {% if match_found %}
+                    <div id="cancel_req" class="d-flex flex-column gap-3 justify-content-center">
+                        <span class="fw-bold border text-success fs-3">Request sent</span>
+                        <button type="button" class="btn btn-danger" onclick="cancel_req()">Cancel request</button>
+                    </div>
+                {% else %}
+                    <button type="button" class="btn btn-success" id="send_req" onclick="send_req()">Send request</button>
+                {% endif %}            
+        </div>
+        <input type="hidden" name="" id="req_from" value="{{ context.user }}">
+        <input type="hidden" name="" id="req_to" value="{{ fetched.username }}">
+    </div>
 {% endblock third_column %}
 
 <!-- JS -->
-{% block JS %}{% endblock JS %}
+{% block JS %}
+    <script src="{% static "js/content/contacts.js" %}"></script>
+{% endblock JS %}

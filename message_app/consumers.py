@@ -3,11 +3,12 @@ import json
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync, sync_to_async
 from channels.db import database_sync_to_async
-from .models import conversation, message, users
+from .models import conversation, message, users, notification
 
 # ~~~~~~~~~~ Websocket Connection ~~~~~~~~~~ #
+
+# Chats
 class chatConsumer(AsyncWebsocketConsumer):
-    # ~~~~~~~~~~ Accept Connection ~~~~~~~~~~ #
     async def connect(self):
         self.room_group_name = 'chats'
 
@@ -29,6 +30,7 @@ class chatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+
         convoId = text_data_json['convo_id']
         msg = text_data_json['message']
         user = text_data_json['user']
@@ -76,7 +78,7 @@ class chatConsumer(AsyncWebsocketConsumer):
             
             'username': username,
             'profile_url': profile_url,
-        })) 
+        }))
     
     async def fetching_data(self, user):
         fetched_convo = await database_sync_to_async(self.fetch_data_from_convo)()
@@ -113,8 +115,6 @@ class chatConsumer(AsyncWebsocketConsumer):
     
     @database_sync_to_async
     def insert_message_to_db(self, convoId, msg, user, rcvr):
-        # convo_id = chatConsumer.generate_random_convo_id(15)
-
         conversation.objects.create(
             convo_id = convoId,    
             message_content = msg,
@@ -122,3 +122,51 @@ class chatConsumer(AsyncWebsocketConsumer):
             receiver = rcvr,
             status = 'sent',
         )
+        
+# Notifications
+class notificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_group_name = 'notification'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+        print('Connected...')
+    
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        print('Connection closed...', close_code)
+
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+
+        type = text_data_json['type']
+
+        if (type == 'send'):
+            req_from = text_data_json['req_from']
+            req_to = text_data_json['req_to']
+
+            await self.insert_notif_to_db(req_from, req_to)
+        else:
+            req_to = text_data_json['req_to']
+
+            await self.remove_req_to_db(req_to)
+
+    @database_sync_to_async
+    def insert_notif_to_db(self, req_from, req_to):
+        notification.objects.create(
+            message_content = 'Sends you a friend request',
+            request_from = req_from,
+            request_to = req_to,
+        )
+    
+    @database_sync_to_async
+    def remove_req_to_db(self, req_to):
+        notification.objects.filter(request_to = req_to).delete()

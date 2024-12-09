@@ -6,8 +6,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
 from django.core.mail import EmailMessage
 from django.contrib import messages
-from .models import users, message, conversation
-from .forms import login_form, register_form, compose_msg_form
+from .models import users, message, conversation, notification
+from .forms import login_form, register_form, compose_msg_form, search_contact
 
 def userProfile(request):
     if 'username' in request.session:
@@ -171,7 +171,7 @@ def chats_convo_page(request, id):
 
 # Groups Page
 def groups_page(request):
-    if 'username' in request.session:    
+    if 'username' in request.session:
         return render(request, 'content/groups.html', {
             'context': userProfile(request)
         })
@@ -181,17 +181,48 @@ def groups_page(request):
 # Contacts Page
 def contacts_page(request):
     if 'username' in request.session:
+        form = search_contact()
+
+        if request.method == 'POST':
+            user = request.session.get('username')
+            notif = notification.objects.filter(request_from = user)
+            form = search_contact(request.POST)
+
+            if form.is_valid():
+                search = form.cleaned_data['search_query']
+
+                if search:
+                    excluded_username = request.session.get('username')
+                    fetched = users.objects.exclude(username=excluded_username).filter(username=search).first()
+                else:
+                    fetched = 'None'  
+
+                match_found = any(fetched.username == n.request_to for n in notif) if fetched else False
+
+                return render(request, 'content/contacts.html', {
+                    'form': form,
+                    'fetched': fetched,
+                    'match_found': match_found,
+                    'context': userProfile(request)
+                })
+
         return render(request, 'content/contacts.html', {
+            'form': form,
+            'none': True,
             'context': userProfile(request)
         })
     else:
         return redirect('login')
-
+    
 # Notifications Page
 def notifications_page(request):
     if 'username' in request.session:
+        user = request.session.get('username')
+        notif = notification.objects.filter(request_to = user)
+
         return render(request, 'content/notifications.html', {
-            'context': userProfile(request)
+            'context': userProfile(request),
+            'notif': notif,
         })
     else:
         return redirect('login')

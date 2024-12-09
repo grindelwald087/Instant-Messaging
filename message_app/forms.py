@@ -153,3 +153,13 @@ class compose_msg_form(forms.Form):
             'maxlength': 1000,
         })
     )
+
+class search_contact(forms.Form):
+    search_query = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'type': 'search',
+            'class': 'form-control search-input',
+            'id': 'search_input',
+            'placeholder': 'Search contacts username...',
+        })
+    )
